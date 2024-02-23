@@ -1,0 +1,53 @@
+alpha: 0.5
+clip:
+epochs: 130
+lr: 0.01
+lr_decay: step
+lr_factor: 0.1
+lr_schedule:
+  - 100
+  - 115
+lr_throttle: False # Not implemented...
+optimizer: sgd
+save_period: -1
+test_batch_size: 300
+test_mode: default
+train_batch_size: 300
+train_mode: progressive
+val_period: 20
+warmup_period: 10
+weight_decay: 2e-4
+
+
+
+curriculum_learning: False
+use_data_parallel: False
+use_early_stopping: False
+scheduler_check_value: val # [train,val,val_ot,loss]
+early_patience: 20
+scheduler_patience: 5
+
+
+noise_l1_alpha: 0.01
+noise_l1_only_final_and_next: False
+
+custom_beta: 0.01
+
+min_iters: 1
+use_compiler: False
+
+
+ot_val_iterations: 100
+
+### we should work on hypothesis
+use_multiple_eval_test: False
+multiple_eval_nr_examples: 100
+multiple_eval_test_sizes: [7,9,13,23,33,43,59]
+# [16,24,32,52,72,92,124] empty
+## 59 needs ~ 700 iterations for mazes
+
+
+single_batch: False
+single_batch_repetitions: 10
+
+no_final_eval: False

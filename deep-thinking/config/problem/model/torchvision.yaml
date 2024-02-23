@@ -1,0 +1,7 @@
+model: resnet18_out4_pretrained
+model_path:
+width: 100
+max_iters: 1
+test_iterations:
+  low: 1
+  high: 1

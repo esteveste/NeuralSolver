@@ -1,0 +1,50 @@
+alpha: 1
+clip: 1
+epochs: 150
+lr: 0.001
+lr_decay: step
+lr_factor: 0.1
+lr_schedule:
+  - 60
+  - 100
+lr_throttle: False
+optimizer: adam
+save_period: -1
+test_batch_size: 500
+test_mode: default # max_conf e' a outra opcao
+train_batch_size: 100
+train_mode: progressive
+val_period: 20
+warmup_period: 10
+
+
+# curriculum_learning:
+#   - [0, 8]
+#   - [10,10]
+#   - [13,12]
+#   - [16,14]
+#   - [20,16]
+#   - [30, 32]
+
+
+### v3/also v4
+# curriculum_learning:
+#   - [0, 8]
+#   - [10,10]
+#   - [13,12]
+#   - [16,14]
+#   - [20,16]
+#   - [25, 24]
+#   - [35, 32]
+
+
+curriculum_learning:
+  - [0, 8]
+  - [10,10]
+  - [13,12]
+  - [16,14]
+  - [21,16]
+  - [30, 20]
+  - [38, 24]
+  - [50, 28]
+  - [60, 32]
