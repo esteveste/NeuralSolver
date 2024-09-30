@@ -16,7 +16,7 @@ from functools import partial
 ## eval tools
 ## PUT YOUR WANDB PROJECT HERE
 entity='entity'
-project='neuralthink'
+project='neuralsolver'
 
 def set_wandb_project(project_arg):
     global project

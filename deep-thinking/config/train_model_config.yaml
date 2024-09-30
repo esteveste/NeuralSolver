@@ -15,7 +15,7 @@ train_log: train_log
 name: training_default
 
 wandb_entity: entity
-wandb_project: neuralthink
+wandb_project: neuralsolver
 wandb_group: ${name}
 wandb_name: ${name}_${run_id}
 

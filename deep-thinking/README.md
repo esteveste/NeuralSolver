@@ -1,6 +1,6 @@
-# Deep Thinking Systems (NeuralThink implementation)
+# Deep Thinking Systems (NeuralSolver implementation)
 
-This repository contains the official implementation of DeepThink (DT nets) and NeuralThink Networks. 
+This repository contains the official implementation of Bansal et al. (DT nets) and NeuralSolver Networks. 
 
 This repository is based on the open-source code from https://github.com/aks2203/deep-thinking developed by Avi Schwarzschild, Eitan Borgnia, Arpit Bansal, Zeyad Emam, and Jonas Geiping.
 

@@ -3,13 +3,6 @@ from matplotlib import pyplot as plt
 from eval_utils import *
 
 import json
-# doesnt work
-# api = None
-
-# def reload_wandb():
-#     global api
-#     api = wandb.Api()
-
 
 
 
@@ -26,12 +19,6 @@ def natural_keys(text):
 
 
 import collections
-# 'evals/13x13_maze_test'
-# 'evals/59x59_maze_test'
-
-# def get_wandb_metric
-# def get_wandb_image?
-
 ## lets do single level columns for now
 
 def get_wandb_plot_values(run, plot_name):
@@ -54,15 +41,6 @@ def get_wandb_plot_values(run, plot_name):
 
     return x,y
 
-# def get_wandb_metric_final(run, metric_name):
-#     return run.summary[metric_name]
-
-
-    # fig, ax = plt.subplots()
-    # ax.plot(x,y)
-    # ax.set_title(plot_name)
-
-    # return fig
 
 def _group_mean_agg(values):
     return np.nanmean(values)

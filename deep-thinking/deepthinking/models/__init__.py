@@ -14,4 +14,4 @@ from .dt_net_2d import *
 from .feedforward_net_2d import *
 from .feedforward_net_1d import *
 
-from .neuralthink import *
+from .neuralsolver import *

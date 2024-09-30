@@ -308,7 +308,7 @@ if __name__ == "__main__":
     name = "doorkey"
 
     # wandb_entity = "entity"
-    # wandb_project = "NeuralThink"
+    # wandb_project = "NeuralSolver"
     # wandb_group= "doorkey_oracle_agent"
 
     # wandb.init(project=wandb_project, entity=wandb_entity,

@@ -1,5 +1,5 @@
 # Easy-To-Hard Datasets
-This repository houses Pytorch datasets used to train and evaluate the NeuralThink model, as well as the other baselines used in the article "NeuralThink: Algorithm Synthesis that Extrapolates in General Tasks" by Bernardo Esteves, Miguel Vasco, and Francisco S. Melo.
+This repository houses Pytorch datasets used to train and evaluate the NeuralSolver model, as well as the other baselines used in the article "NeuralSolver: Algorithm Synthesis that Extrapolates in General Tasks" by Bernardo Esteves, Miguel Vasco, and Francisco S. Melo.
 
 This repository is based on the open-source code from https://github.com/aks2203/easy-to-hard-data.
 
@@ -85,7 +85,7 @@ Note that in this repository there are scripts to make data for prefix sums and 
 This package can also be installed from source, by cloning the repository as follows.
 
 ``` 
-git clone https://github.com/esteveste/NeuralThink
+git clone https://github.com/esteveste/NeuralSolver
 cd easy-to-hard-data
 pip install -e .
 ```
