@@ -1,10 +1,10 @@
 
 import datetime
-
 import chess
 import pandas as pd
 import torch
 from tqdm import tqdm
+import os
 
 
 # Ignore statemenst for pylint:
@@ -92,10 +92,11 @@ def generate_tensors(path):
 
 def main():
     data, targets, who_moves, rating = generate_tensors("deepthinking_lichess.csv")
-    torch.save(targets, "chess_data/targets.pth")
-    torch.save(data, "chess_data/data.pth")
-    torch.save(who_moves, "chess_data/who_moves.pth")
-    torch.save(rating, "chess_data/rating.pth")
+    os.makedirs("data/chess_data", exist_ok=True)
+    torch.save(targets, "data/chess_data/targets.pth")
+    torch.save(data, "data/chess_data/data.pth")
+    torch.save(who_moves, "data/chess_data/who_moves.pth")
+    torch.save(rating, "data/chess_data/rating.pth")
 
 
 if __name__ == "__main__":
