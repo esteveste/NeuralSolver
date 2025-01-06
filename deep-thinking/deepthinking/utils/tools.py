@@ -227,7 +227,7 @@ def load_model_from_checkpoint(problem, model_args, device, use_data_parallel=Tr
         in_channels = 12
     elif 'mnist' in problem:
         in_channels = 1
-    elif 'simple_pong' in problem:
+    elif 'pong' in problem:
         in_channels = 1
     elif 'snake_astar_v6' in problem or 'snake_new' in problem or "snake_bfs_v7" in problem:
         in_channels = 9
