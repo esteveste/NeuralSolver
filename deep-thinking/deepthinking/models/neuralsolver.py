@@ -281,8 +281,6 @@ class NeuralSolverClass(nn.Module):
         else:
             assert False, "not implemented"
 
-        assert conv_dim == 2, "not implemented conv1d"
-
         if conv_dim == 2:
             if use_smaller_head:
                 head_conv1 = conv_class(
@@ -387,7 +385,7 @@ class NeuralSolverClass(nn.Module):
         lstm_inp1 = self.lstm.forward_input(x)
         
         # due to compatibility with original code
-        # you need to implement state reuse if you want to use this
+        # you need to implement state reuse, if you want this functionality
         state=None
 
         for i in range(iters_to_do * mul):
@@ -400,7 +398,9 @@ class NeuralSolverClass(nn.Module):
             interim_thought = self._state_drop(interim_thought)
 
             if i % mul == mul - 1:
-                out = self.head(interim_thought).view(x.size(0), self.output_size)
+                out = self.head(interim_thought)
+                if self.use_pooling:
+                    out = out.view(x.size(0), self.output_size)
                 all_outputs[:, i // mul] = out
 
         if self.training:
@@ -542,6 +542,7 @@ def neuralsolver_1l_2d_out3_maxpool(width, **kwargs):
 def neuralsolver_1d(width, **kwargs):
     return NeuralSolverClass(
         width=width,
+        output_size=2,
         in_channels=kwargs["in_channels"],
         recall=True,
         _dropout_gal2=0.4,
@@ -550,13 +551,14 @@ def neuralsolver_1d(width, **kwargs):
         dropout_method="pytorch",
         conv_dim=1,
         use_pooling=False,
-        use_smaller_head=True,
+        # use_smaller_head=True, # we used standard kernel 3 on this one, it worked fine on prefix task.
     )
 
 
 def neuralsolver_2d(width, **kwargs):
     return NeuralSolverClass(
         width=width,
+        output_size=2,
         in_channels=kwargs["in_channels"],
         recall=True,
         _dropout_gal2=0.4,
@@ -571,6 +573,7 @@ def neuralsolver_2d(width, **kwargs):
 def neuralsolver_2d_nodrop(width, **kwargs):
     return NeuralSolverClass(
         width=width,
+        output_size=2,
         in_channels=kwargs["in_channels"],
         recall=True,
         _dropout_gal2=0,
