@@ -99,11 +99,9 @@ def main(cfg: DictConfig):
     highest_train_acc_so_far = -1
     highest_val_acc_so_far = -1
     highest_val_acc_so_far_overthinking = -1
-    highest_val_acc_so_far_window = -1
     best_so_far = False
     best_so_far_overthinking = False
     best_so_far_or_equal = False
-    best_so_far_window = False
 
     train_acc,val_acc,test_acc=[],[],[]
 
@@ -122,7 +120,6 @@ def main(cfg: DictConfig):
         
         val_acc=val_acc_dict[cfg.problem.model.max_iters]
         val_acc_overthinking=val_acc_dict[cfg.problem.hyp.ot_val_iterations]
-        val_acc_window = np.mean(list(val_acc_dict.values()))
 
         train_losses_list.append(acc)
         val_accs_list.append(val_acc)
@@ -170,15 +167,10 @@ def main(cfg: DictConfig):
             best_so_far_overthinking=True
             highest_val_acc_so_far_overthinking = val_acc_overthinking
 
-        if val_acc_window >= highest_val_acc_so_far_window:
-            best_so_far_window=True
-            highest_val_acc_so_far_window = val_acc_window
-
         log.info(f"Training loss at epoch {epoch}: {loss}")
         log.info(f"Training accuracy at epoch {epoch}: {acc}")
         log.info(f"Val accuracy at epoch {epoch}: {val_acc}")
         log.info(f"Val accuracy overthinking at epoch {epoch}: {val_acc_overthinking}")
-        log.info(f"Val accuracy window at epoch {epoch}: {val_acc_window}")
 
         # if the loss is nan, then stop the training
         if np.isnan(float(loss)):
@@ -189,7 +181,6 @@ def main(cfg: DictConfig):
         writer.add_scalar("Accuracy/acc", acc, epoch)
         writer.add_scalar("Accuracy/val_acc", val_acc, epoch)
         writer.add_scalar("Accuracy/val_acc_overthinking", val_acc_overthinking, epoch)
-        writer.add_scalar("Accuracy/val_acc_window", val_acc_window, epoch)
 
         for i in range(len(optimizer.param_groups)):
             writer.add_scalar(f"Learning_rate/group{i}",
@@ -298,15 +289,6 @@ def main(cfg: DictConfig):
             # wandb.save(out_str)
 
 
-        if best_so_far_window and cfg.save_model:
-            state = {"net": net.state_dict(), "epoch": epoch, "optimizer": optimizer.state_dict()}
-
-            out_str = f"model_best_window.pth"
-
-            best_so_far_window = False
-            log.info(f"Saving model to: {out_str}")
-            torch.save(state, out_str)
-
         if earlystopping.stop:
             print("End of Training because of early stopping at epoch {}".format(epoch))
             break
@@ -342,9 +324,6 @@ def main(cfg: DictConfig):
     run.summary["train_check_val_acc_OT"] =highest_val_acc_so_far_overthinking==100
     run.summary["train_check_val_acc90_OT"] =highest_val_acc_so_far_overthinking>=90
     run.summary["train_check_val_acc99_OT"] =highest_val_acc_so_far_overthinking>=99
-    run.summary["train_check_val_acc_window"] =highest_val_acc_so_far_window==100
-    run.summary["train_check_val_acc90_window"] =highest_val_acc_so_far_window>=90
-    run.summary["train_check_val_acc99_window"] =highest_val_acc_so_far_window>=99
     run.summary["evals/train_check_list_evalV2"] = True
 
     ## area under loss curve
@@ -375,61 +354,13 @@ def eval(name,run_id):
 
     os.chdir("./deep-thinking/")
 
-
     # from eval_utils import *
     from eval_definition import do_eval_online,get_wandb_plot_values,partial,eval_supervised_and_fixed_point, eval_supervised, eval_env
 
     run = wandb.run
 
-    # print(run.summary.keys())
-    # print("history: ",hasattr(run,"history"))
-    # print(name)
-
     ### evaluations
     if 'maze' in name:
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="13",max_iters=500), check_eval_name='evals/40_std_f', force_eval=False)
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="13",max_iters=500,plot_name='evals/{}_size_test_OT',file_name='model_best_overthinking'), check_eval_name='evals/13_OT_f', force_eval=False)
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="13",max_iters=500,plot_name='evals/{}_size_test_last',file_name='model_'), check_eval_name='evals/13_last_f', force_eval=False)
-
-
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="22",max_iters=500), check_eval_name='evals/22_std_f', force_eval=False)
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="22",max_iters=500,plot_name='evals/{}_size_test_OT',file_name='model_best_overthinking'), check_eval_name='evals/22_OT_f', force_eval=False)
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="22",max_iters=500,plot_name='evals/{}_size_test_last',file_name='model_'), check_eval_name='evals/22_last_f', force_eval=False)
-
-
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="33",max_iters=500), check_eval_name='evals/33_std_f', force_eval=False)
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="33",max_iters=500,plot_name='evals/{}_size_test_OT',file_name='model_best_overthinking'), check_eval_name='evals/33_OT_f', force_eval=False)
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="33",max_iters=500,plot_name='evals/{}_size_test_last',file_name='model_'), check_eval_name='evals/33_last_f', force_eval=False)
-
-
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="59",max_iters=1000), check_eval_name='evals/59_std_f', force_eval=False)
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="59",max_iters=1000,plot_name='evals/{}_size_test_OT',file_name='model_best_overthinking'), check_eval_name='evals/59_OT_f', force_eval=False)
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="59",max_iters=1000,plot_name='evals/{}_size_test_last',file_name='model_'), check_eval_name='evals/59_last_f', force_eval=False)
-
-
-
-        ## simplify
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="13",max_iters=500), check_eval_name='evals/40_std_f', force_eval=False)
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="13",max_iters=500,plot_name='evals/{}_size_test_last',file_name='model_'), check_eval_name='evals/13_last_f', force_eval=False)
-
-
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="22",max_iters=500), check_eval_name='evals/22_std_f', force_eval=False)
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="22",max_iters=500,plot_name='evals/{}_size_test_OT',file_name='model_best_overthinking'), check_eval_name='evals/22_OT_f', force_eval=False)
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="22",max_iters=500,plot_name='evals/{}_size_test_last',file_name='model_'), check_eval_name='evals/22_last_f', force_eval=False)
-
-
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="33",max_iters=500), check_eval_name='evals/33_std_f', force_eval=False)
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="33",max_iters=500,plot_name='evals/{}_size_test_last',file_name='model_'), check_eval_name='evals/33_last_f', force_eval=False)
-
-        # WAS ON
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="13",max_iters=500,plot_name='evals/{}_size_test_OT',file_name='model_best_overthinking'), check_eval_name='evals/13_OT_f', force_eval=False)
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="33",max_iters=500,plot_name='evals/{}_size_test_OT',file_name='model_best_overthinking'), check_eval_name='evals/33_OT_f', force_eval=False)
-
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="59",max_iters=1000), check_eval_name='evals/59_std_f', force_eval=False)
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="59",max_iters=1000,plot_name='evals/{}_size_test_last',file_name='model_'), check_eval_name='evals/59_last_f', force_eval=False)
-        
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="59",max_iters=1000,plot_name='evals/{}_size_test_OT',file_name='model_best_overthinking'), check_eval_name='evals/59_OT_f', force_eval=False)
-
         if '1s' in name:
             # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="65",max_iters=1000,plot_name='evals/{}_size_test_OT',file_name='model_best_overthinking'), check_eval_name='evals/65_OT_f', force_eval=False)
 
@@ -441,28 +372,19 @@ def eval(name,run_id):
             # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="121",max_iters=2000,plot_name='evals/{}_size_test_OT',file_name='model_best_overthinking'), check_eval_name='evals/121_OT_f', force_eval=False)
             # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="121",max_iters=2000,plot_name='evals/{}_size_test_last',file_name='model_'), check_eval_name='evals/121_last_f', force_eval=False)
             do_eval_online(run,partial(eval_supervised,run_id=run_id,size="121",max_iters=2000,plot_name='evals/{}_size_test_best_eq',file_name='model_best_val2'), check_eval_name='evals/121_best_eq_f', force_eval=False)
-            # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="121",max_iters=2000,plot_name='evals/{}_size_test_window',file_name='model_best_window'), check_eval_name='evals/121_window_f', force_eval=False)
 
 
         else:
             do_eval_online(run,partial(eval_supervised,run_id=run_id,size="59",max_iters=1000), check_eval_name='evals/59_std_f', force_eval=False)
             # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="59",max_iters=1000,plot_name='evals/{}_size_test_last',file_name='model_'), check_eval_name='evals/59_last_f', force_eval=False)
             do_eval_online(run,partial(eval_supervised,run_id=run_id,size="59",max_iters=1000,plot_name='evals/{}_size_test_best_eq',file_name='model_best_val2'), check_eval_name='evals/59_best_eq_f', force_eval=False)
-            # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="59",max_iters=1000,plot_name='evals/{}_size_test_window',file_name='model_best_window'), check_eval_name='evals/59_window_f', force_eval=False)
 
-
-
-        # if 'half' in name: 
-        #     # we probably want to evaluate on 5000
-        #     do_eval_online(run, partial(eval_supervised,run_id=run_id,size="59",max_iters=5000,plot_name='evals/{}_size_test_OT_5x',file_name='model_best_overthinking'), check_eval_name='evals/59_OT_f5x', force_eval=False)
-        #     do_eval_online(run, partial(eval_supervised,run_id=run_id,size="59",max_iters=5000,plot_name='evals/{}_size_test_5x'), check_eval_name='evals/59_std_f5x', force_eval=False)
 
     elif 'chess' in name:
 
         do_eval_online(run,partial(eval_supervised,run_id=run_id,size=700_000,max_iters=200,plot_name='evals/{}_size_test',folder_path='../../../outputs/chess_ablation'), check_eval_name='evals/chess_700k', force_eval=False)
         # do_eval_online(run,partial(eval_supervised,run_id=run_id,size=700_000,max_iters=200,plot_name='evals/{}_size_test_OT',file_name='model_best_overthinking',folder_path='../../../outputs/chess_ablation'), check_eval_name='evals/chess_700k_OT', force_eval=False)
         do_eval_online(run,partial(eval_supervised,run_id=run_id,size=700_000,max_iters=200,plot_name='evals/{}_size_test_best_eq',file_name='model_best_val2',folder_path='../../../outputs/chess_ablation'), check_eval_name='evals/chess_700k_best_eq', force_eval=False)
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,size=700_000,max_iters=200,plot_name='evals/{}_size_test_window',file_name='model_best_window',folder_path='../../../outputs/chess_ablation'), check_eval_name='evals/chess_700k_window', force_eval=False)
         # do_eval_online(run,partial(eval_supervised,run_id=run_id,size=700_000,max_iters=200,plot_name='evals/{}_size_test_last',file_name='model_',folder_path='../../../outputs/chess_ablation'), check_eval_name='evals/chess_700k_last', force_eval=False)
 
     elif 'prefix_sums' in name:
@@ -484,21 +406,6 @@ def eval(name,run_id):
         # do_eval_online(run,partial(eval_supervised,run_id=run_id,folder_path=folder_path,size="512",max_iters=500,plot_name='evals/{}_size_test_OT',file_name='model_best_overthinking'), check_eval_name='evals/59_OT_f', force_eval=False)
         do_eval_online(run,partial(eval_supervised,run_id=run_id,folder_path=folder_path,size="512",max_iters=500,plot_name='evals/{}_size_test_best_eq',file_name='model_best_val2'), check_eval_name='evals/59_best_eq_f', force_eval=False)
         # do_eval_online(run,partial(eval_supervised,run_id=run_id,folder_path=folder_path,size="512",max_iters=500,plot_name='evals/{}_size_test_last',file_name='model_'), check_eval_name='evals/59_last_f', force_eval=False)
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,folder_path=folder_path,size="512",max_iters=500,plot_name='evals/{}_size_test_window',file_name='model_best_window'), check_eval_name='evals/59_window_f', force_eval=False)
-
-
-
-    # elif 'line' in name:
-    #     do_eval_online(run,partial(eval_supervised,run_id=run_id,size="256",max_iters=500), check_eval_name='evals/59_std_f', force_eval=False)
-    #     do_eval_online(run,partial(eval_supervised,run_id=run_id,size="256",max_iters=500,plot_name='evals/{}_size_test_OT',file_name='model_best_overthinking'), check_eval_name='evals/59_OT_f', force_eval=False)
-
-    #     do_eval_online(run, partial(eval_supervised,run_id=run_id,size="32",max_iters=200), check_eval_name='evals/40_std_f', force_eval=False)
-    #     do_eval_online(run, partial(eval_supervised,run_id=run_id,size="32",max_iters=200,plot_name='evals/{}_size_test_OT',file_name='model_best_overthinking'), check_eval_name='evals/13_OT_f', force_eval=False)
-
-    #     do_eval_online(run,partial(eval_supervised,run_id=run_id,size="256",max_iters=5000,plot_name='evals/{}_size_test_5000'), check_eval_name='evals/59_std_f5000', force_eval=False)
-    #     do_eval_online(run,partial(eval_supervised,run_id=run_id,size="256",max_iters=5000,plot_name='evals/{}_size_test_OT_5000',file_name='model_best_overthinking'), check_eval_name='evals/59_OT_f5000', force_eval=False)
-    #     do_eval_online(run,partial(eval_supervised,run_id=run_id,size="512",max_iters=5000,plot_name='evals/{}_size_test_OT_5000',file_name='model_best_overthinking'), check_eval_name='evals/512_OT_f5000', force_eval=False)
-
 
     elif 'pong' in name:
         # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="13",max_iters=100), check_eval_name='evals/40_std_f', force_eval=False)
@@ -522,7 +429,6 @@ def eval(name,run_id):
 
         # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="128",max_iters=500,plot_name='evals/{}_size_test_OT',file_name='model_best_overthinking'), check_eval_name='evals/128_OT_f', force_eval=False)
         do_eval_online(run,partial(eval_supervised,run_id=run_id,size="128",max_iters=500,plot_name='evals/{}_size_test_best_eq',file_name='model_best_val2'), check_eval_name='evals/128_best_eq_f', force_eval=False)
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="128",max_iters=500,plot_name='evals/{}_size_test_window',file_name='model_best_window'), check_eval_name='evals/128_window_f', force_eval=False)
 
         do_eval_online(run,partial(eval_supervised,run_id=run_id,size="128",max_iters=500), check_eval_name='evals/128_std_f', force_eval=False)
         # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="128",max_iters=500,plot_name='evals/{}_size_test_last',file_name='model_'), check_eval_name='evals/128_last_f', force_eval=False)
@@ -546,18 +452,6 @@ def eval(name,run_id):
         do_eval_online(run,partial(eval_supervised,run_id=run_id,size="128",max_iters=1000,plot_name='evals/{}_size_test_best_eq',file_name='model_best_val2'), check_eval_name='evals/128_best_f', force_eval=False)
         do_eval_online(run,partial(eval_supervised,run_id=run_id,size="128",max_iters=1000), check_eval_name='evals/128_std_f', force_eval=False)
 
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="128",max_iters=1000,plot_name='evals/{}_size_test_OT',file_name='model_best_overthinking'), check_eval_name='evals/128_OT_f', force_eval=False)
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="128",max_iters=1000,plot_name='evals/{}_size_test_window',file_name='model_best_window'), check_eval_name='evals/128_window_f', force_eval=False)
-        
-        # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="128",max_iters=1000,plot_name='evals/{}_size_test_last',file_name='model_'), check_eval_name='evals/128_last_f', force_eval=False)
-
-    # elif 'minigrid_empty' in name or 'minigrid' in name or 'simple' in name:
-    #     do_eval_online(run,partial(eval_supervised,run_id=run_id,size="(124, 124)",max_iters=500), check_eval_name='evals/59_std_f', force_eval=False)
-    #     do_eval_online(run,partial(eval_supervised,run_id=run_id,size="(124, 124)",max_iters=500,plot_name='evals/{}_size_test_OT',file_name='model_best_overthinking'), check_eval_name='evals/59_OT_f', force_eval=False)
-
-    #     do_eval_online(run,partial(eval_supervised,run_id=run_id,size="(32, 32)",max_iters=200), check_eval_name='evals/40_std_f', force_eval=False)
-    #     do_eval_online(run,partial(eval_supervised,run_id=run_id,size="(32, 32)",max_iters=200,plot_name='evals/{}_size_test_OT',file_name='model_best_overthinking'), check_eval_name='evals/13_OT_f', force_eval=False)
-
     elif 'doorkey' in name:
 
         # do_eval_online(run,partial(eval_supervised,run_id=run_id,size="64",max_iters=500,plot_name='evals/{}_size_test_OT',file_name='model_best_overthinking'), check_eval_name='evals/59_OT_f', force_eval=False)
@@ -575,11 +469,6 @@ def eval(name,run_id):
         # do_eval_online(run,partial(eval_env,size=32,max_iters=100,summary_name='evals/env_{}_test_v2'), check_eval_name='evals/32_f3', force_eval=False)
         # # do_eval_online(runs,partial(eval_env,size=64,max_iters=200,summary_name='evals/env_{}_test_v2'), check_eval_name='evals/64_200_f3', force_eval=False)
         # do_eval_online(run,partial(eval_env,size=64,max_iters=200,summary_name='evals/env_{}_test_v2'), check_eval_name='evals/64_200_f3', force_eval=False)
-
-
-        do_eval_online(run,partial(eval_env,run_id=run_id,size=128,max_iters=400,summary_name='evals/env_{}_test_v2'), check_eval_name='evals/128_f3', force_eval=False)
-        do_eval_online(run,partial(eval_env,run_id=run_id,size=128,max_iters=400,summary_name='evals/env_{}_test_best_eq_v2',file_name='model_best_val2'), check_eval_name='evals/128_best_eq_f3', force_eval=False)
-
 
     else:
         raise NotImplementedError

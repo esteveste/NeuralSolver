@@ -425,7 +425,6 @@ GLOBAL_PROBLEM_NAMES = ["pong",
                         "goto",
                         "doorkey",
                         "1s_maze",
-
                         "thin_maze",
                         ]
 

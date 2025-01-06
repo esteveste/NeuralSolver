@@ -47,6 +47,10 @@ python ./easy-to-hard-data/make_doorkey_dataset.py
 ## prefix sum dataset is downloaded automatically
 python ./easy-to-hard-data/make_mazes.py
 python ./easy-to-hard-data/make_thin_mazes.py
+
+# for chess it is needed to download the data manually
+wget https://cs.umd.edu/~tomg/download/Easy_to_Hard_Datav2/deepthinking_lichess.tar.gz 
+tar -xvzf deepthinking_lichess.tar.gz 
 python ./easy-to-hard-data/make_chess.py
 ```
 
